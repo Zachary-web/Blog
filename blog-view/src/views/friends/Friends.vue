@@ -5,8 +5,7 @@
 		</div>
 		<div class="ui attached segment">
 			<div class="ui link three doubling cards">
-				<a :href="item.website" target="_blank" rel="external nofollow noopener" class="card" :style="randomRGB()"
-				   v-for="(item,index) in friendList" :key="index" @click="addViews(item.nickname)">
+				<a :href="item.website" target="_blank" rel="external nofollow noopener" class="card" :style="randomRGB()" v-for="(item,index) in friendList" :key="index" @click="addViews(item.nickname)">
 					<div class="image">
 						<img :src="item.avatar" onerror="this.src = '/img/error.png'">
 					</div>
@@ -19,7 +18,7 @@
 		</div>
 		<!--页面描述-->
 		<div class="ui teal attached segment">
-			<div class="typo content" v-lazy-container="{selector: 'img'}" v-viewer v-html="info.content"></div>
+			<div class="typo content" v-viewer v-html="info.content"></div>
 		</div>
 		<!--评论-->
 		<div class="ui bottom teal attached segment threaded comments">
@@ -34,7 +33,7 @@
 	import CommentList from "@/components/comment/CommentList";
 
 	export default {
-		name: "Friends",
+		name: "blogFriends",
 		components: {CommentList},
 		data() {
 			return {
