@@ -14,7 +14,7 @@
 					<div class="row m-padded-tb-small">
 						<div class="ui horizontal link list m-center">
 							<div class="item m-datetime">
-								<i class="small calendar icon"></i><span>{{ dateFormat(blog.createTime,'YYYY-MM-DD') }}</span>
+								<i class="small calendar icon"></i><span>{{ blog.createTime | dateFormat('YYYY-MM-DD') }}</span>
 							</div>
 							<div class="item m-views">
 								<i class="small eye icon"></i><span>{{ blog.views }}</span>
@@ -42,7 +42,7 @@
 						<i class="small folder open icon"></i><span class="m-text-500">{{ blog.category.name }}</span>
 					</router-link>
 					<!--文章Markdown正文-->
-					<div class="typo js-toc-content m-padded-tb-small match-braces rainbow-braces" v-viewer :class="{'m-big-fontsize':bigFontSize}" v-html="blog.content"></div>
+					<div class="typo js-toc-content m-padded-tb-small match-braces rainbow-braces" v-lazy-container="{selector: 'img'}" v-viewer :class="{'m-big-fontsize':bigFontSize}" v-html="blog.content"></div>
 					<!--赞赏-->
 					<div style="margin: 2em auto">
 						<el-popover placement="top" width="220" trigger="click" v-if="blog.appreciation">
@@ -53,9 +53,7 @@
 									<div style="font-size: 12px;text-align: center;margin-top: 5px;">一块是真爱</div>
 								</div>
 							</div>
-              <template v-slot:reference>
-                <el-button  class="ui orange inverted circular button m-text-500">赞赏</el-button>
-              </template>
+							<el-button slot="reference" class="ui orange inverted circular button m-text-500">赞赏</el-button>
 						</el-popover>
 					</div>
 					<!--横线-->
@@ -75,8 +73,8 @@
 				<li>作者：{{ $store.state.introduction.name }}
 					<router-link to="/about">（联系作者）</router-link>
 				</li>
-				<li>发表时间：{{ dateFormat(blog.createTime,'YYYY-MM-DD HH:mm')}}</li>
-				<li>最后修改：{{ dateFormat(blog.updateTime,'YYYY-MM-DD HH:mm') }}</li>
+				<li>发表时间：{{ blog.createTime | dateFormat('YYYY-MM-DD HH:mm') }}</li>
+				<li>最后修改：{{ blog.updateTime | dateFormat('YYYY-MM-DD HH:mm') }}</li>
 				<li>本站点采用<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank"> 署名 4.0 国际 (CC BY 4.0) </a>创作共享协议。可自由转载、引用，并且允许商业性使用。但需署名作者且注明文章出处。</li>
 			</ul>
 		</div>
@@ -93,10 +91,9 @@
 	import CommentList from "@/components/comment/CommentList";
 	import {mapState} from "vuex";
 	import {SET_FOCUS_MODE, SET_IS_BLOG_RENDER_COMPLETE} from '@/store/mutations-types';
-  import {dateFormat} from "@/util/dateTimeFormatUtils";
 
 	export default {
-		name: "blogBlog",
+		name: "Blog",
 		components: {CommentList},
 		data() {
 			return {
@@ -145,7 +142,6 @@
 			this.getBlog()
 		},
 		methods: {
-      dateFormat:dateFormat,
 			getBlog(id = this.blogId) {
 				//密码保护的文章，需要发送密码验证通过后保存在localStorage的Token
 				const blogToken = window.localStorage.getItem(`blog${id}`)
@@ -158,7 +154,6 @@
 						document.title = this.blog.title + this.siteInfo.webTitleSuffix
 						//v-html渲染完毕后，渲染代码块样式
 						this.$nextTick(() => {
-              // eslint-disable-next-line no-undef
 							Prism.highlightAll()
 							//将文章渲染完成状态置为 true
 							this.$store.commit(SET_IS_BLOG_RENDER_COMPLETE, true)

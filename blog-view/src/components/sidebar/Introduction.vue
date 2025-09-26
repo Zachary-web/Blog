@@ -53,11 +53,9 @@
 				</div>
 				<div>
 					<el-collapse accordion>
-            <template v-for="(item,index) in introduction.favorites">
-              <el-collapse-item :title="item.title" :name="index" v-if="item.title"  :key="index">
-                <div>{{ item.content }}</div>
-              </el-collapse-item>
-            </template>
+						<el-collapse-item :title="item.title" :name="index" v-if="item.title" v-for="(item,index) in introduction.favorites" :key="index">
+							<div>{{ item.content }}</div>
+						</el-collapse-item>
 					</el-collapse>
 				</div>
 			</div>
@@ -69,7 +67,7 @@
 	import {mapState} from 'vuex'
 
 	export default {
-		name: "blogIntroduction",
+		name: "Introduction",
 		computed: {
 			...mapState(['introduction'])
 		},

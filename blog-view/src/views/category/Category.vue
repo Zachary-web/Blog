@@ -12,7 +12,7 @@
 	import {getBlogListByCategoryName} from "@/api/category";
 
 	export default {
-		name: "blogCategory",
+		name: "Category",
 		components: {BlogList},
 		data() {
 			return {
@@ -43,7 +43,6 @@
 						this.blogList = res.data.list
 						this.totalPage = res.data.totalPage
 						this.$nextTick(() => {
-              // eslint-disable-next-line no-undef
 							Prism.highlightAll()
 						})
 					} else {

@@ -7,7 +7,7 @@
 				<div class="m-item" v-for="blog in randomBlogList" :key="blog.id" @click.prevent="toBlog(blog)">
 					<div class="img" :style="{'background-image':'url(' + blog.firstPicture + ')'}"></div>
 					<div class="info">
-						<div class="date">{{ dateFormat(blog.createTime,'YYYY-MM-DD') }}</div>
+						<div class="date">{{ blog.createTime | dateFormat('YYYY-MM-DD') }}</div>
 						<div class="title">{{ blog.title }}</div>
 					</div>
 				</div>
@@ -17,9 +17,7 @@
 </template>
 
 <script>
-  import {dateFormat} from "@/util/dateTimeFormatUtils";
-
-  export default {
+	export default {
 		name: "RandomBlog",
 		props: {
 			randomBlogList: {
@@ -30,8 +28,7 @@
 		methods: {
 			toBlog(blog) {
 				this.$store.dispatch('goBlogPage', blog)
-			},
-      dateFormat:dateFormat
+			}
 		}
 	}
 </script>

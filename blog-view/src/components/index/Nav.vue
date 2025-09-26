@@ -11,11 +11,9 @@
 				<span class="el-dropdown-link item" :class="{'m-mobile-hide': mobileHide,'active':$route.name==='category'}">
 					<i class="idea icon"></i>分类<i class="caret down icon"></i>
 				</span>
-        <template v-slot:dropdown>
-          <el-dropdown-menu>
-            <el-dropdown-item :command="category.name" v-for="(category,index) in categoryList" :key="index">{{ category.name }}</el-dropdown-item>
-          </el-dropdown-menu>
-        </template>
+				<el-dropdown-menu slot="dropdown">
+					<el-dropdown-item :command="category.name" v-for="(category,index) in categoryList" :key="index">{{ category.name }}</el-dropdown-item>
+				</el-dropdown-menu>
 			</el-dropdown>
 			<router-link to="/archives" class="item" :class="{'m-mobile-hide': mobileHide,'active':$route.name==='archives'}">
 				<i class="clone icon"></i>归档
@@ -29,11 +27,11 @@
 			<router-link to="/about" class="item" :class="{'m-mobile-hide': mobileHide,'active':$route.name==='about'}">
 				<i class="info icon"></i>关于我
 			</router-link>
-			<el-autocomplete v-model="queryString" :fetch-suggestions="debounceQuery" placeholder="Search..." class="right item m-search" :class="{'m-mobile-hide': mobileHide}" popper-class="m-search-item" @select="handleSelect">
-        <template v-slot:suffix>
-          <i class="search icon el-input__icon"></i>
-        </template>
-				<template v-slot:item>
+			<el-autocomplete v-model="queryString" :fetch-suggestions="debounceQuery" placeholder="Search..."
+			                 class="right item m-search" :class="{'m-mobile-hide': mobileHide}"
+			                 popper-class="m-search-item" @select="handleSelect">
+				<i class="search icon el-input__icon" slot="suffix"></i>
+				<template slot-scope="{ item }">
 					<div class="title">{{ item.title }}</div>
 					<span class="content">{{ item.content }}</span>
 				</template>
@@ -50,7 +48,7 @@
 	import {mapState} from 'vuex'
 
 	export default {
-		name: "blogNav",
+		name: "Nav",
 		props: {
 			blogName: {
 				type: String,
@@ -66,8 +64,7 @@
 				mobileHide: true,
 				queryString: '',
 				queryResult: [],
-				timer: null,
-        menus: []
+				timer: null
 			}
 		},
 		computed: {
@@ -92,16 +89,14 @@
 				}
 			})
 			//监听点击事件，收起导航菜单
-      document.addEventListener('click', (e) => {
-        // 兼容处理：优先用 composedPath
-        const path = e.composedPath ? e.composedPath() : (e.path || [])
-        const flag = path.some(item => item === this.$refs.nav)
-
-        if (!this.mobileHide && !flag) {
-          this.mobileHide = true
-        }
-      })
-
+			document.addEventListener('click', (e) => {
+				//遍历冒泡
+				let flag = this.$refs.nav.contains(e.target)
+				//如果导航栏是打开状态，且点击的元素不是Nav的子元素，则收起菜单
+				if (!this.mobileHide && !flag) {
+					this.mobileHide = true
+				}
+			})
 		},
 		methods: {
 			toggle() {
@@ -185,7 +180,7 @@
 	}
 
 	.el-dropdown-menu__item {
-		padding: 5px 15px !important;
+		padding: 0 15px !important;
 		color: rgba(255, 255, 255, .9) !important;
 	}
 
@@ -203,7 +198,6 @@
 
 	.m-search {
 		min-width: 220px;
-    max-width: 300px !important; /* 添加最大宽度 */
 		padding: 0 !important;
 	}
 

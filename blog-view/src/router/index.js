@@ -1,6 +1,8 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import Vue from 'vue'
+import VueRouter from 'vue-router'
 import getPageTitle from '@/util/get-page-title'
 
+Vue.use(VueRouter)
 
 const routes = [
 	{
@@ -16,7 +18,7 @@ const routes = [
 			{
 				path: '/home',
 				name: 'home',
-				component: () => import('@/views/home/HomePage.vue'),
+				component: () => import('@/views/home/Home'),
 				meta: {title: '首页'}
 			},
 			{
@@ -65,12 +67,10 @@ const routes = [
 	}
 ]
 
-const router = createRouter({
-    // hash模式
-    // history: createWebHashHistory(),
-    history: createWebHistory(),
-    base: process.env.BASE_URL,
-    routes: routes,
+const router = new VueRouter({
+	mode: 'history',
+	base: process.env.BASE_URL,
+	routes
 })
 
 //挂载路由守卫

@@ -12,7 +12,7 @@
 	import {getBlogListByTagName} from "@/api/tag";
 
 	export default {
-		name: "blogTag",
+		name: "Tag",
 		components: {BlogList},
 		data() {
 			return {
@@ -43,7 +43,6 @@
 						this.blogList = res.data.list
 						this.totalPage = res.data.totalPage
 						this.$nextTick(() => {
-              // eslint-disable-next-line no-undef
 							Prism.highlightAll()
 						})
 					} else {
