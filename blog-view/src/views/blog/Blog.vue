@@ -95,6 +95,9 @@
 	import {SET_FOCUS_MODE, SET_IS_BLOG_RENDER_COMPLETE} from '@/store/mutations-types';
   import {dateFormat} from "@/util/dateTimeFormatUtils";
 
+
+
+
 	export default {
 		name: "blogBlog",
 		components: {CommentList},
@@ -146,30 +149,41 @@
 		},
 		methods: {
       dateFormat:dateFormat,
-			getBlog(id = this.blogId) {
-				//密码保护的文章，需要发送密码验证通过后保存在localStorage的Token
-				const blogToken = window.localStorage.getItem(`blog${id}`)
-				//如果有则发送博主身份Token
-				const adminToken = window.localStorage.getItem('adminToken')
-				const token = adminToken ? adminToken : (blogToken ? blogToken : '')
-				getBlogById(token, id).then(res => {
-					if (res.code === 200) {
-						this.blog = res.data
-						document.title = this.blog.title + this.siteInfo.webTitleSuffix
-						//v-html渲染完毕后，渲染代码块样式
-						this.$nextTick(() => {
+      getBlog(id = this.blogId) {
+        // 密码保护的文章，需要发送密码验证通过后保存在localStorage的Token
+        const blogToken = window.localStorage.getItem(`blog${id}`)
+        // 如果有则发送博主身份Token
+        const adminToken = window.localStorage.getItem('adminToken')
+        const token = adminToken ? adminToken : (blogToken ? blogToken : '')
+        getBlogById(token, id).then(res => {
+          if (res.code === 200) {
+            this.blog = res.data
+            document.title = this.blog.title + this.siteInfo.webTitleSuffix
+            // v-html渲染完毕后，渲染代码块样式 + 处理图片data-src
+            this.$nextTick(() => {
               // eslint-disable-next-line no-undef
-							Prism.highlightAll()
-							//将文章渲染完成状态置为 true
-							this.$store.commit(SET_IS_BLOG_RENDER_COMPLETE, true)
-						})
-					} else {
-						this.msgError(res.msg)
-					}
-				}).catch(() => {
-					this.msgError("请求失败")
-				})
-			},
+              Prism.highlightAll()
+
+              // 新增：处理图片data-src转src，触发加载
+              const imgElements = document.querySelectorAll('.typo img[data-src]') // 只找博客内容里带data-src的img
+              imgElements.forEach(img => {
+                const imgUrl = img.getAttribute('data-src') // 获取存储的图片链接
+                if (imgUrl) { // 确保链接存在
+                  img.setAttribute('src', imgUrl) // 赋值给src，浏览器开始加载
+                  img.removeAttribute('data-src') // 可选：删除无用的data-src属性，保持DOM干净
+                }
+              })
+
+              // 将文章渲染完成状态置为 true
+              this.$store.commit(SET_IS_BLOG_RENDER_COMPLETE, true)
+            })
+          } else {
+            this.msgError(res.msg)
+          }
+        }).catch(() => {
+          this.msgError("请求失败")
+        })
+      },
 			changeFocusMode() {
 				this.$store.commit(SET_FOCUS_MODE, !this.focusMode)
 			}

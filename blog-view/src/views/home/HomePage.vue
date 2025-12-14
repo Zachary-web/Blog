@@ -9,7 +9,7 @@
 </template>
 
 <script setup>
-import {ref, nextTick} from 'vue'
+import {ref, nextTick, watch, onMounted} from 'vue'
 import {useRouter} from 'vue-router'  // 移除未使用的useRoute
 import {useStore} from 'vuex'
 import {ElMessage} from 'element-plus'  // 导入消息提示组件
@@ -25,6 +25,10 @@ const getBlogListFinish = ref(false)
 // 路由和状态管理（移除未使用的route）
 const router = useRouter()
 const store = useStore()
+
+defineOptions({
+  name: 'HomePage'
+});
 
 // 导航守卫
 router.beforeEach((to, from, next) => {
@@ -42,6 +46,8 @@ router.beforeEach((to, from, next) => {
   next()
 })
 
+
+
 // 获取博客列表方法
 const getBlogList = (pageNum) => {
   fetchBlogList(pageNum).then(res => {
@@ -52,6 +58,7 @@ const getBlogList = (pageNum) => {
         window.Prism?.highlightAll()
       })
       getBlogListFinish.value = true
+      console.log('文章数据：', res.data);
     } else {
       // 使用Element Plus的消息提示替代msgError
       ElMessage.error(res.msg)
@@ -60,6 +67,11 @@ const getBlogList = (pageNum) => {
     ElMessage.error("请求失败")
   })
 }
+
+onMounted(() => {
+  getBlogList()
+})
+
 </script>
 
 <style scoped>

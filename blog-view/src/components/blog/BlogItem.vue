@@ -68,27 +68,81 @@
   </div>
 </template>
 
+
+<!---------------------------------------------------------------------------------->
 <script setup>
 import { useStore } from 'vuex'
 import { dateFormat } from "@/util/dateTimeFormatUtils";
-import { defineProps } from 'vue'  // 显式导入defineProps
+import { defineProps, watch, nextTick } from 'vue'  // 新增：导入watch和nextTick
 
-// 直接定义props，不赋值给变量（因为仅在模板中使用）
-defineProps({
+// 定义props（保持不变）
+const props = defineProps({  // 注意：这里建议赋值给props变量，方便后续监听
   blogList: {
     type: Array,
     required: true
   }
 })
 
-// 获取store实例
+// 获取store实例（保持不变）
 const store = useStore()
 
-// 跳转到博客详情页
+// 跳转到博客详情页（保持不变）
 const toBlog = (blog) => {
   store.dispatch('goBlogPage', blog)
 }
+
+// 新增：处理图片data-src转src的函数
+const handleImgSrc = async () => {
+  await nextTick()  // 等待DOM完全渲染（v-for和v-html完成）
+  // 找到所有摘要里的图片（.typo类下带data-src的img）
+  const imgList = document.querySelectorAll('.typo img[data-src]')
+  imgList.forEach(img => {
+    const imgUrl = img.getAttribute('data-src')
+    if (imgUrl) {
+      img.setAttribute('src', imgUrl)  // 替换为src
+      img.removeAttribute('data-src')  // 可选：清理无用属性
+    }
+  })
+}
+
+// 新增：监听blogList变化，初始化和更新时都执行处理
+watch(
+    () => props.blogList,  // 监听props.blogList
+    handleImgSrc,          // 变化时执行处理函数
+    {
+      immediate: true,     // 初始化时立即执行一次（首次加载列表时处理）
+      deep: true           // 深度监听（若blogList内部item变化也触发）
+    }
+)
 </script>
 
+<!------------------------------------------------------------------------------------->
+
+<!--<script setup>-->
+<!--import { useStore } from 'vuex'-->
+<!--import { dateFormat } from "@/util/dateTimeFormatUtils";-->
+<!--import { defineProps } from 'vue'  // 显式导入defineProps-->
+
+<!--// 直接定义props，不赋值给变量（因为仅在模板中使用）-->
+<!--defineProps({-->
+<!--  blogList: {-->
+<!--    type: Array,-->
+<!--    required: true-->
+<!--  }-->
+<!--})-->
+
+<!--// 获取store实例-->
+<!--const store = useStore()-->
+
+<!--// 跳转到博客详情页-->
+<!--const toBlog = (blog) => {-->
+<!--  store.dispatch('goBlogPage', blog)-->
+<!--}-->
+<!--</script>-->
+
 <style scoped>
+/* 1. 博客列表项外层容器：核心圆角设置 */
+.ui.padded.attached.segment {
+  border-radius: 20px !important; /* 核心：设置20px圆角，!important覆盖默认样式 */
+}
 </style>

@@ -1,10 +1,10 @@
 <template>
   <div class="site">
     <!--顶部导航-->
-    <Nav :blogName="siteInfo.blogName" :categoryList="categoryList"/>
+    <Nav :blogName="siteInfo.blogName" :categoryList="categoryList" />
     <!--首页大图 只在首页且pc端时显示-->
     <div class="m-mobile-hide">
-      <Header v-if="route.name === 'home'"/>
+      <Header v-if="route.name === 'HomePage'"/>
     </div>
 
     <div class="main">
@@ -18,7 +18,7 @@
             <!--中间-->
             <div class="ten wide column">
               <router-view v-slot="{ Component }">
-                <keep-alive include="Home">
+                <keep-alive include="HomePage">
                   <component :is="Component"/>
                 </keep-alive>
               </router-view>
@@ -29,6 +29,7 @@
               <Tags :tagList="tagList" :class="{'m-display-none': focusMode}"/>
               <!--只在文章页面显示目录-->
               <Tocbot v-if="route.name === 'blog'"/>
+              <ArchiveTime v-if="route.name === 'archives'" :class="{'m-display-none': focusMode}"/>
             </div>
           </div>
         </div>
@@ -66,6 +67,7 @@ import MyAPlayer from "@/components/index/MyAPlayer.vue";
 import Tocbot from "@/components/sidebar/Tocbot.vue";
 import BlogPasswordDialog from "@/components/index/BlogPasswordDialog.vue";
 import { SAVE_CLIENT_SIZE, SAVE_INTRODUCTION, SAVE_SITE_INFO, RESTORE_COMMENT_FORM } from "@/store/mutations-types";
+import ArchiveTime from "@/components/sidebar/ArchiveTime.vue";
 
 // 状态定义
 const siteInfo = ref({ blogName: '' })
@@ -82,6 +84,7 @@ const store = useStore()
 
 // 计算属性
 const focusMode = computed(() => store.state.focusMode)
+watch(() => route.name, n => console.log('当前路由name:', n))
 
 // 路由变化时滚动到顶部
 watch(
@@ -175,12 +178,51 @@ onMounted(() => {
   margin-right: auto !important;
 }
 
-.ui.grid .three.column {
-  padding: 0;
+/* 1. 核心：给 three wide column 列设置圆角和基础样式 */
+.ui.grid .three.wide.column.m-mobile-hide {
+  padding: 0 12px !important; /* 列左右留间距，避免与中间内容贴紧 */
 }
 
-.ui.grid .ten.column {
+/* 2. 列内第一个组件（左侧介绍卡片、右侧随机博客）顶部圆角适配 */
+.ui.grid .three.wide.column.m-mobile-hide > div:first-child {
+  border-radius: 20px 20px 20px 20px !important; /* 顶部20px圆角，底部直角（与下一个组件衔接） */
+  overflow: hidden; /* 确保内部元素不超出圆角 */
+  margin-top: 0 !important; /* 清除顶部margin，避免与列间距冲突 */
+}
+
+/* 3. 列内中间组件（右侧标签）上下圆角适配（衔接上下组件） */
+.ui.grid .three.wide.column.m-mobile-hide > div:not(:first-child):not(:last-child) {
+  border-radius: 0 !important; /* 中间组件无圆角，避免与上下组件产生间隙 */
+  overflow: hidden;
+  margin: 4px 0 !important; /* 组件间留4px小间距，视觉更透气 */
+  border-top: none !important;
+  border-bottom: none !important;
+}
+
+/* 4. 列内最后一个组件（右侧归档/目录）底部圆角适配 */
+.ui.grid .three.wide.column.m-mobile-hide > div:last-child {
+  border-radius: 20px 20px 20px 20px !important; /* 底部20px圆角，顶部直角（与上一个组件衔接） */
+  overflow: hidden;
+  margin-bottom: 0 !important; /* 清除底部margin */
+}
+
+/* 5. 统一列内组件样式：基础阴影+边框，突出圆角 + 新增hover阴影效果 */
+.ui.grid .three.wide.column.m-mobile-hide > div {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important; /* 基础阴影（默认状态） */
+  border: none !important; /* 清除默认边框，避免直角边框露出 */
+  background: #fff !important; /* 统一白色背景，与圆角搭配更协调 */
+  transition: box-shadow 0.3s ease !important; /* 阴影过渡动画，hover更丝滑 */
+}
+
+/* 恢复并优化hover阴影：鼠标移动上去时增强阴影 */
+.ui.grid .three.wide.column.m-mobile-hide > div:hover {
+  box-shadow: 0 1px 2px 0px rgba(0, 0, 0, 0.2), 0 2px 4px 0px rgba(0, 0, 0, 0.2), 0 4px 8px 0px rgba(0, 0, 0, 0.2), 0 8px 16px 0px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* 6. 中间十列：调整左内边距，与右侧三列间距匹配 */
+.ui.grid .ten.wide.column {
   padding-top: 0;
+  padding-left: 24px !important; /* 与右侧三列的12px padding呼应，保持整体间距平衡 */
 }
 
 .m-display-none {

@@ -125,25 +125,75 @@
 </script>
 
 <style scoped>
-	.ui.circular.icon.button {
-		width: 38px;
-	}
+/* 1. 最外层包裹div：清除默认边距，避免挤压卡片 */
+.m-box {
+  padding: 0px; /* 保留原有的内边距，避免卡片贴边 */
+  border-radius: 20px !important; /* 强制覆盖默认样式，与卡片完全一致 */
+}
 
-	#rollText {
-		font-size: 15px;
-		white-space: nowrap;
-		text-overflow: ellipsis;
-		overflow: hidden;
-	}
+/* 2. 卡片父容器 .ui.segments：关键！顶部圆角+隐藏溢出，彻底消除父容器直角 */
+.ui.segments {
+  border-radius: 20px !important; /* 强制覆盖默认样式，与卡片完全一致 */
+  overflow: hidden !important; /* 确保卡片的圆角不被父容器切割，尤其是顶部 */
+  border: none !important; /* 清除父容器默认边框，避免直角边框露出 */
+  box-shadow: none !important; /* 清除父容器阴影，避免和卡片阴影叠加 */
+  padding: 0 !important; /* 清除父容器默认内边距，避免卡片顶部出现“留白直角” */
+}
+
+/* 3. 卡片本身：强化顶部圆角，确保上下一致 */
+.ui.card {
+  border-radius: 20px !important; /* 强制覆盖，确保顶部和底部都是20px圆角 */
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1) !important;
+  overflow: hidden !important; /* 关键：确保内部所有元素（包括顶部图片）不超出圆角 */
+  margin: 0 !important;
+  border: none !important; /* 清除卡片默认边框，避免顶部边框直角 */
+}
+
+/* 社交按钮：保持间距和尺寸 */
+.ui.circular.icon.button {
+  width: 38px;
+  margin: 0 4px;
+}
+
+/* 滚动文字：增加上下内边距，避免贴边 */
+#rollText {
+  font-size: 15px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  padding: 6px 0;
+}
+
+/* 卡片内容区：增加内边距，内容更舒展 */
+.ui.card .content {
+  padding: 16px 12px !important; /* 覆盖默认内边距，上下16px、左右12px */
+}
+
+/* 卡片底部额外内容区（社交按钮区）：增加底部内边距 */
+.ui.card .extra.content {
+  padding: 12px 12px 16px !important; /* 上下内边距调整，避免按钮贴底 */
+}
 </style>
 
 <style>
-	.el-collapse-item {
-		padding-left: 15px;
-		padding-right: 15px;
-	}
+/* 折叠面板：优化内边距和圆角，与卡片风格统一 */
+.el-collapse-item {
+  padding: 0 15px !important; /* 清除默认上下内边距，避免和卡片内边距叠加 */
+  margin-bottom: 8px; /* 面板项之间增加间距 */
+}
 
-	.el-collapse-item .el-collapse-item__content {
-		padding-bottom: 10px;
-	}
+.el-collapse-item .el-collapse-item__header {
+  border-radius: 8px; /* 面板标题栏圆角 */
+  margin: 4px 0; /* 标题栏上下间距 */
+}
+
+.el-collapse-item .el-collapse-item__content {
+  padding: 0 8px 12px !important; /* 面板内容区内边距，底部12px避免贴底 */
+}
+
+/* 折叠面板容器：清除默认边框和背景，避免直角 */
+.el-collapse {
+  border: none !important;
+  background: transparent !important;
+}
 </style>
